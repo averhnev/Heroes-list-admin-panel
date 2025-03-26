@@ -1,12 +1,29 @@
-import { createStore, combineReducers } from 'redux';
-import heroes from '../reducers/heroes';
-import filters from '../reducers/filters';
+import { createStore, combineReducers, compose } from 'redux'
+import heroes from '../reducers/heroes'
+import filters from '../reducers/filters'
 
-const rootReducer = combineReducers({
-    heroes,
-    filters
-})
+const enhancer = (createStore) => (...args) => {
+    const store = createStore(...args)
 
-const store = createStore(rootReducer);
+    const oldDispatch = store.dispatch
 
-export default store;
+    store.dispatch = (action) => {
+        if (typeof action === 'string') {
+            return oldDispatch({
+                type: action
+            })
+        }
+        return oldDispatch(action)
+    }
+
+    return store
+}
+
+const store = createStore(
+    combineReducers({ heroes, filters }),
+    compose(
+        enhancer
+    )
+);
+
+export default store
