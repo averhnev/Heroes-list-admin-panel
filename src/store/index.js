@@ -1,5 +1,4 @@
-import { createStore, combineReducers, applyMiddleware } from 'redux'
-import { thunk } from 'redux-thunk'
+import { configureStore } from '@reduxjs/toolkit'
 import heroes from '../reducers/heroes'
 import filters from '../reducers/filters'
 
@@ -12,9 +11,14 @@ const stringMiddleware = () => (next) => (action) => {
     return next(action)
 }
 
-const store = createStore(
-    combineReducers({ heroes, filters }),
-    applyMiddleware(thunk, stringMiddleware)
-);
+const store = configureStore(
+    {
+        reducer: {
+            heroes,
+            filters
+        },
+        middleware: getDefaultMiddleware => getDefaultMiddleware().concat(stringMiddleware)
+    },
+)
 
 export default store
